@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager - Analytics</title>
+
+    <link rel="stylesheet" href="css/style1.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+
+            <div class="logo">
+                <div class="circle">TM</div>
+                <h2>Task Manager</h2>
+            </div>
+
+            <ul class="menu">
+                <li><a href="home.html"><i class="fa fa-home"></i> Home</a></li>
+                <li><a href="mytask.html"><i class="fa fa-tasks"></i> My Tasks</a></li>
+                <li class="active"><a href="analytics.html"><i class="fa fa-chart-line"></i> Analytics</a></li>
+                <li><a href="history.html"><i class="fa fa-clock"></i> Work History</a></li>
+                <li><a href="index.html"><i class="fa fa-lock"></i> Log Out</a></li>
+            </ul>
+
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+
+            <!-- Top -->
+            <div class="top-bar">
+                <div>
+                    <h1>Analytics & Performance</h1>
+                    <p id="currentDateText">13 March 2021</p>
+                </div>
+            </div>
+
+            <!-- Stats Grid (Using the theme's .stats style) -->
+            <div class="stats">
+
+                <div class="card purple">
+                    <h2 id="completionRateText">0%</h2>
+                    <p>Task Completion Rate</p>
+                </div>
+
+                <div class="card blue">
+                    <h2 id="focusHoursText">0 hrs</h2>
+                    <p>Total Focus Hours</p>
+                </div>
+
+                <div class="card pink">
+                    <h2 id="velocityScoreText">+14%</h2>
+                    <p>Average Velocity Score</p>
+                </div>
+
+                <div class="card green">
+                    <h2 id="goalsMetText">0/0</h2>
+                    <p>Goals Met</p>
+                </div>
+
+            </div>
+
+            <!-- Charts (Using theme's chart structure) -->
+            <div class="charts">
+
+                <div class="chart-box">
+                    <h2>Weekly Task Distribution</h2>
+                    <div class="line-chart-container" id="lineChartContainer">
+
+                        <!-- Dynamic line chart SVG renders here -->
+                    </div>
+                </div>
+
+                <div class="chart-box">
+                    <h2>Productivity Ratio</h2>
+                    <div class="circle-chart" style="margin: 20px auto;">
+                        <div class="inner-circle" id="productivityPercentText">0%</div>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+            <!-- Milestones & Achievements -->
+            <div class="analytics-box">
+                <h2>Milestones & Achievements</h2>
+
+                <div class="achievement-row">
+                    <div class="achievement-icon">🏆</div>
+                    <div class="achievement-details">
+                        <h4>Cleared Today's List Streak</h4>
+                        <p>Achieved a 5-day streak of clearing all tasks on time.</p>
+                    </div>
+                </div>
+
+                <div class="achievement-row">
+                    <div class="achievement-icon">🎉</div>
+                    <div class="achievement-details">
+                        <h4>Project Website Revamp Completed</h4>
+                        <p>Delivered the project revamp 2 days ahead of the scheduled deadline.</p>
+                    </div>
+                </div>
+
+                <div class="achievement-row">
+                    <div class="achievement-icon">🚀</div>
+                    <div class="achievement-details">
+                        <h4>Highest Weekly Velocity Score</h4>
+                        <p>Reached an average weekly velocity score of +14%.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer
+                style="margin-top: 45px; padding-top: 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; color: #888; font-size: 13px;">
+                <p>&copy; 2026 Task Manager. All rights reserved.</p>
+                <div style="display: flex; gap: 15px;">
+                    <a href="#" style="color: #007BFF; text-decoration: none;">Privacy Policy</a>
+                    <a href="#" style="color: #007BFF; text-decoration: none;">Terms of Service</a>
+                    <a href="#" style="color: #007BFF; text-decoration: none;">Help & Support</a>
+                </div>
+            </footer>
+
+        </div>
+
+        <!-- Right Side -->
+        <div class="right-panel">
+
+            <div class="right-panel-stats">
+
+                <div class="insight-card">
+                    <h3>Weekly Insights</h3>
+                    <p>
+                        <strong>💡 Productivity Tip:</strong>
+                        Completing tasks consistently throughout the week helps reduce workload pressure and improves
+                        overall efficiency.
+                    </p>
+                    <br>
+                    <p>
+                        <strong>📊 Overview:</strong>
+                        Monitor your task progress regularly and prioritize high-priority items to stay on schedule.
+                    </p>
+                </div>
+
+                <div class="insight-card" style="margin-top: 15px;">
+                    <h3>Active Load</h3>
+                    <p>
+                        You currently have <strong id="activeTasksCount">0</strong> active tasks on your board.
+                        Keep your progress updated to ensure accurate tracking.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // Initialize page
+        document.addEventListener("DOMContentLoaded", function () {
+            // Load data
+            let tasks = JSON.parse(localStorage.getItem("dashboard_tasks")) || [];
+            let history = JSON.parse(localStorage.getItem("dashboard_history")) || [];
+
+            // Set current date
+            const today = new Date();
+            const dateOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById("currentDateText").textContent = today.toLocaleDateString('en-US', dateOptions);
+
+            // Compute dynamic analytics metrics
+            // Exclude completed tasks from active counts to prevent double-counting
+            const totalActive = tasks.filter(t => t.status !== "Completed").length;
+            const totalHistory = history.length;
+            const totalTasks = totalActive + totalHistory;
+            const completedTasks = history.filter(t => t.status === "Completed").length;
+
+            // Completion Rate
+            const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+            document.getElementById("completionRateText").textContent = completionRate + "%";
+            document.getElementById("productivityPercentText").textContent = completionRate + "%";
+
+            // Set Productivity Ratio circular progress bar color dynamically
+            const circleChart = document.querySelector(".circle-chart");
+            if (circleChart) {
+                circleChart.style.border = "none";
+                circleChart.style.background = `conic-gradient(#7b6ef6 0% ${completionRate}%, #eef0f6 ${completionRate}% 100%)`;
+            }
+
+            // Goals Met (Completed / Total)
+            document.getElementById("goalsMetText").textContent = `${completedTasks}/${totalTasks}`;
+
+            // Focus hours: 2 hours base per completed task + 12 hours start focus
+            const focusHours = (completedTasks * 2) + (totalActive * 1);
+            document.getElementById("focusHoursText").textContent = focusHours + " hrs";
+
+            // Active load text
+            document.getElementById("activeTasksCount").textContent = totalActive;
+
+            // Render the interactive line chart
+            renderWeeklyChart();
+
+            // Render weekly chart
+            function renderWeeklyChart() {
+                const container = document.getElementById("lineChartContainer");
+                if (!container) return;
+
+                // Use a local variable to avoid scope confusion
+                let chartHistory = JSON.parse(localStorage.getItem("dashboard_history")) || [];
+
+                // Get last 7 days 
+                const last7Days = [];
+                for (let i = 6; i >= 0; i--) {
+                    const d = new Date();
+                    d.setDate(d.getDate() - i);
+                    last7Days.push({
+                        dateString: d.toISOString().split('T')[0],
+                        dayName: d.toLocaleDateString('en-US', { weekday: 'short' }),
+                        dateLabel: d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })
+                    });
+                }
+
+                // Tally completed tasks per day from local history
+                const data = last7Days.map(day => {
+                    const count = chartHistory.filter(item => {
+                        return item.status === "Completed" && item.endDate === day.dateString;
+                    }).length;
+                    return {
+                        ...day,
+                        count: count
+                    };
+                });
+
+                // Use sample history data when no records are available
+                const hasData = data.some(d => d.count > 0);
+                if (!hasData && chartHistory.length === 0) {
+                    const mockHistory = [
+                        { id: 1, name: "Database Schema Design", startDate: last7Days[0].dateString, endDate: last7Days[0].dateString, status: "Completed", category: "Work", priority: "High" },
+                        { id: 2, name: "Create Login Screen UI", startDate: last7Days[1].dateString, endDate: last7Days[1].dateString, status: "Completed", category: "Work", priority: "High" },
+                        { id: 3, name: "User Registration Route", startDate: last7Days[1].dateString, endDate: last7Days[1].dateString, status: "Completed", category: "Work", priority: "Medium" },
+                        { id: 4, name: "Analytics Dashboard UI", startDate: last7Days[3].dateString, endDate: last7Days[3].dateString, status: "Completed", category: "Work", priority: "High" },
+                        { id: 5, name: "Configure Local Dev Environment", startDate: last7Days[4].dateString, endDate: last7Days[4].dateString, status: "Completed", category: "Personal", priority: "Low" },
+                        { id: 6, name: "Double Check Responsive Grid", startDate: last7Days[5].dateString, endDate: last7Days[5].dateString, status: "Completed", category: "Work", priority: "Medium" },
+                        { id: 7, name: "Deploy to Staging Server", startDate: last7Days[5].dateString, endDate: last7Days[5].dateString, status: "Completed", category: "Work", priority: "High" }
+                    ];
+                    localStorage.setItem("dashboard_history", JSON.stringify(mockHistory));
+                    chartHistory = mockHistory;
+
+                    // Recalculate completions per day with seeder data
+                    last7Days.forEach((day, index) => {
+                        data[index].count = chartHistory.filter(item => item.status === "Completed" && item.endDate === day.dateString).length;
+                    });
+                }
+
+                // Chart scaling constants
+                const svgWidth = 420;
+                const svgHeight = 220;
+                const paddingLeft = 30;
+                const paddingRight = 20;
+                const paddingTop = 25;
+                const paddingBottom = 35;
+
+                const plotWidth = svgWidth - paddingLeft - paddingRight;
+                const plotHeight = svgHeight - paddingTop - paddingBottom;
+
+                // Find max value on Y-axis to compute increments
+                const maxCount = Math.max(...data.map(d => d.count));
+                const yMax = Math.max(5, Math.ceil(maxCount / 5) * 5); // Minimum yMax is 5
+
+                // Calculate X coordinate
+                const getX = (index) => paddingLeft + (index * (plotWidth / 6));
+
+                // Calculate Y coordinate
+                const getY = (count) => paddingTop + plotHeight - (count * (plotHeight / yMax));
+
+                const points = data.map((d, i) => ({
+                    x: getX(i),
+                    y: getY(d.count),
+                    count: d.count,
+                    dayName: d.dayName,
+                    dateLabel: d.dateLabel
+                }));
+
+                // Build interactive SVG elements
+                let svgHtml = `<svg width="100%" height="200" viewBox="0 0 ${svgWidth} ${svgHeight}" class="chart-svg" preserveAspectRatio="xMidYMid meet">
+            <defs>
+                <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#7b6ef6" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="#7b6ef6" stop-opacity="0"/>
+                </linearGradient>
+                <linearGradient id="bar-gradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#8dd7e8" stop-opacity="0.8"/>
+                    <stop offset="100%" stop-color="#7b6ef6" stop-opacity="0.2"/>
+                </linearGradient>
+                <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+                    <feDropShadow dx="0" dy="6" stdDeviation="4" flood-color="#7b6ef6" flood-opacity="0.2" />
+                </filter>
+            </defs>
+        `;
+
+                // Grid Lines & Axis Values
+                const gridDivisions = 5;
+                for (let i = 0; i <= gridDivisions; i++) {
+                    const value = Math.round((yMax / gridDivisions) * i);
+                    const y = getY(value);
+                    svgHtml += `
+                <line x1="${paddingLeft}" y1="${y}" x2="${svgWidth - paddingRight}" y2="${y}" class="grid-line" />
+                <text x="${paddingLeft - 10}" y="${y + 4}" text-anchor="end" class="axis-label">${value}</text>
+            `;
+                }
+
+                // Faded Purple Area Underneath
+                let areaPath = `M ${points[0].x} ${paddingTop + plotHeight} `;
+                points.forEach(p => {
+                    areaPath += `L ${p.x} ${p.y} `;
+                });
+                areaPath += `L ${points[points.length - 1].x} ${paddingTop + plotHeight} Z`;
+                svgHtml += `<path d="${areaPath}" class="chart-area" />`;
+
+                // Draw Vertical Bars for each day (Weekly Task Distribution Bar)
+                points.forEach((p) => {
+                    const barWidth = 18;
+                    const barHeight = paddingTop + plotHeight - p.y;
+                    if (barHeight > 0) {
+                        svgHtml += `
+                    <rect x="${p.x - barWidth / 2}" y="${p.y}" width="${barWidth}" height="${barHeight}" rx="4" ry="4" fill="url(#bar-gradient)" />
+                `;
+                    }
+                });
+
+                // Smooth Bezier Curve Path
+                let linePath = `M ${points[0].x} ${points[0].y} `;
+                for (let i = 1; i < points.length; i++) {
+                    const p0 = points[i - 1];
+                    const p = points[i];
+                    const cpX1 = p0.x + (p.x - p0.x) / 2;
+                    const cpY1 = p0.y;
+                    const cpX2 = p0.x + (p.x - p0.x) / 2;
+                    const cpY2 = p.y;
+                    linePath += `C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${p.x} ${p.y} `;
+                }
+                svgHtml += `<path d="${linePath}" class="chart-line" filter="url(#shadow)" />`;
+
+                // Weekday labels at bottom
+                points.forEach((p) => {
+                    svgHtml += `
+                <text x="${p.x}" y="${svgHeight - 10}" text-anchor="middle" class="axis-label" style="font-weight: 500;">${p.dayName}</text>
+            `;
+                });
+
+                // Circle nodes with invisible large mouse triggers
+                points.forEach((p) => {
+                    svgHtml += `
+                <g class="dot-group" data-count="${p.count}" data-day="${p.dayName}" data-date="${p.dateLabel}" data-x="${p.x}" data-y="${p.y}">
+                    <circle cx="${p.x}" cy="${p.y}" r="15" class="chart-dot-trigger" />
+                    <circle cx="${p.x}" cy="${p.y}" class="chart-dot" />
+                </g>
+            `;
+                });
+
+                svgHtml += `</svg>`;
+
+                // Append DOM structure
+                const tooltipHtml = `<div class="chart-tooltip" id="chartTooltip"></div>`;
+                container.innerHTML = svgHtml + tooltipHtml;
+
+                // Coordinate tooltips
+                const dotGroups = container.querySelectorAll(".dot-group");
+                const tooltip = container.querySelector("#chartTooltip");
+
+                dotGroups.forEach(group => {
+                    const trigger = group.querySelector(".chart-dot-trigger");
+                    const count = group.getAttribute("data-count");
+                    const day = group.getAttribute("data-day");
+                    const date = group.getAttribute("data-date");
+                    const x = parseFloat(group.getAttribute("data-x"));
+                    const y = parseFloat(group.getAttribute("data-y"));
+
+                    // Show tooltip
+                    const show = (e) => {
+                        tooltip.innerHTML = `<strong>${count} tasks</strong><br><span style="color:#bbb;font-size:10px;font-weight:normal;">${day}, ${date}</span>`;
+                        const percentX = (x / svgWidth) * 100;
+                        const percentY = (y / svgHeight) * 100;
+
+                        tooltip.style.left = `${percentX}%`;
+                        tooltip.style.top = `${percentY - 8}%`;
+                        tooltip.style.opacity = "1";
+                        tooltip.style.transform = "translate(-50%, -100%) scale(1)";
+                    };
+
+                    // Hide tooltip
+                    const hide = () => {
+                        tooltip.style.opacity = "0";
+                        tooltip.style.transform = "translate(-50%, -100%) scale(0.9)";
+                    };
+
+                    trigger.addEventListener("mouseenter", show);
+                    trigger.addEventListener("mouseleave", hide);
+                    trigger.addEventListener("touchstart", show);
+                    trigger.addEventListener("touchend", hide);
+                });
+            }
+        }); // Closes DOMContentLoaded
+    </script>
+</body>
+
+</html>

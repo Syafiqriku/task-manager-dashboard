@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager - My Tasks</title>
+
+    <link rel="stylesheet" href="css/style1.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+
+            <div class="logo">
+                <div class="circle">TM</div>
+                <h2>Task Manager</h2>
+            </div>
+
+            <ul class="menu">
+                <li><a href="home.html"><i class="fa fa-home"></i> Home</a></li>
+                <li class="active"><a href="mytask.html"><i class="fa fa-tasks"></i> My Tasks</a></li>
+                <li><a href="analytics.html"><i class="fa fa-chart-line"></i> Analytics</a></li>
+                <li><a href="history.html"><i class="fa fa-clock"></i> Work History</a></li>
+                <li><a href="index.html"><i class="fa fa-lock"></i> Log Out</a></li>
+            </ul>
+
+            <button class="task-btn" id="addTaskBtn">+ ADD NEW TASK</button>
+
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+
+            <!-- Top -->
+            <div class="top-bar">
+                <div>
+                    <h1>My Tasks</h1>
+                    <p id="currentDateText">13 March 2021</p>
+                </div>
+
+                <input type="text" id="searchInput" placeholder="Search tasks...">
+            </div>
+
+            <!-- Kanban Board -->
+            <div class="progress-section-header" style="margin-top: 35px; margin-bottom: 15px;">
+                <h2>Task Status Management</h2>
+            </div>
+            <div class="kanban-board">
+                <div class="kanban-column todo">
+                    <h3>To-Do <span class="column-count" id="todoCount">0</span></h3>
+                    <div class="kanban-cards" id="todoCards"></div>
+                </div>
+
+                <div class="kanban-column in-progress">
+                    <h3>In Progress <span class="column-count" id="inProgressColCount">0</span></h3>
+                    <div class="kanban-cards" id="inProgressCards"></div>
+                </div>
+
+                <div class="kanban-column completed">
+                    <h3>Completed <span class="column-count" id="completedColCount">0</span></h3>
+                    <div class="kanban-cards" id="completedCards"></div>
+                </div>
+            </div>
+
+            <!-- Dynamic Breakdown & Priority Charts -->
+            <div class="charts" style="margin-top: 35px;">
+
+                <div class="chart-box" style="height: 360px;">
+                    <h2>Task Breakdown by Status</h2>
+                    <div class="donut-chart-container" id="statusDonutContainer"
+                        style="position: relative; height: 260px; margin-top: 15px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                        <!-- Dynamic Donut Chart SVG renders here -->
+                    </div>
+                </div>
+
+                <div class="chart-box" style="height: 360px;">
+                    <h2>Tasks by Priority</h2>
+                    <div class="priority-chart-container" id="priorityBarContainer"
+                        style="position: relative; height: 260px; margin-top: 15px;">
+                        <!-- Dynamic Bar Chart SVG renders here -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <footer
+                style="margin-top: 45px; padding-top: 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; color: #888; font-size: 13px;">
+                <p>&copy; 2026 Task Manager. All rights reserved.</p>
+                <div style="display: flex; gap: 15px;">
+                    <a href="#" style="color: #007BFF; text-decoration: none;">Privacy Policy</a>
+                    <a href="#" style="color: #007BFF; text-decoration: none;">Terms of Service</a>
+                    <a href="#" style="color: #007BFF; text-decoration: none;">Help & Support</a>
+                </div>
+            </footer>
+
+        </div>
+
+        <!-- Right Side -->
+        <div class="right-panel">
+
+
+
+            <div class="upcoming" id="upcomingSection">
+
+                <!-- Dynamic upcoming events will render here -->
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Add Task Modal -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModalBtn">&times;</span>
+            <h2>Create New Item</h2>
+            <form id="newTaskForm">
+                <div class="form-group">
+                    <label for="itemName">Item Name</label>
+                    <input type="text" id="itemName" required placeholder="e.g. Database Setup">
+                </div>
+                <div class="form-group">
+                    <label for="itemType">Item Type</label>
+                    <select id="itemType" required>
+                        <option value="task">Progress Task</option>
+                        <option value="event">Upcoming Event</option>
+                    </select>
+                </div>
+
+                <!-- Progress Field (Show only for tasks) -->
+                <div class="form-group" id="progressGroup">
+                    <label for="itemProgress">Progress (%)</label>
+                    <input type="number" id="itemProgress" min="0" max="100" value="0">
+                </div>
+
+                <!-- Category (Show only for tasks) -->
+                <div class="form-group" id="categoryGroup">
+                    <label for="itemCategory">Category</label>
+                    <select id="itemCategory">
+                        <option value="Work">Work</option>
+                        <option value="Study">Study</option>
+                        <option value="Personal">Personal</option>
+                        <option value="Fitness">Fitness</option>
+                    </select>
+                </div>
+
+                <!-- Priority (Show only for tasks) -->
+                <div class="form-group" id="priorityGroup">
+                    <label for="itemPriority">Priority Level</label>
+                    <select id="itemPriority">
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                    </select>
+                </div>
+
+                <!-- Event Time Field (Show only for events) -->
+                <div class="form-group" id="timeGroup" style="display: none;">
+                    <label for="eventTime">Time (e.g. 10 AM, 2 PM)</label>
+                    <input type="text" id="eventTime" placeholder="e.g. 10 AM">
+                </div>
+
+                <div class="form-group" id="statusGroup">
+                    <label for="itemStatus">Status</label>
+                    <select id="itemStatus">
+                        <option value="In Progress">In Progress</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="submit-btn">Create Item</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Log to History Modal -->
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeHistoryModalBtn">&times;</span>
+            <h2>Log Task to History</h2>
+            <form id="historyForm">
+                <input type="hidden" id="historyTaskId">
+
+                <div class="form-group">
+                    <label for="historyTaskName">Task Name</label>
+                    <input type="text" id="historyTaskName" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="historyDesc">Description</label>
+                    <textarea id="historyDesc" placeholder="e.g. Completed designing all mockup screens"
+                        style="padding:10px; border-radius:10px; border:1px solid #ddd; height:80px; resize:none; outline:none; font-family:Arial;"></textarea>
+                </div>
+
+                <div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
+                    <div class="form-group" style="flex:1;">
+                        <label for="historyStartDate">Start Date</label>
+                        <input type="date" id="historyStartDate">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label for="historyEndDate">Completion Date</label>
+                        <input type="date" id="historyEndDate">
+                    </div>
+                </div>
+
+                <div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
+                    <div class="form-group" style="flex:1;">
+                        <label for="historyStatus">Status Result</label>
+                        <select id="historyStatus">
+                            <option value="Completed">Completed</option>
+                            <option value="Failed">Failed</option>
+                            <option value="Cancelled">Cancelled</option>
+                            <option value="Delayed">Delayed</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label for="historyDuration">Duration</label>
+                        <input type="text" id="historyDuration" placeholder="e.g. 2 days, 5 hours">
+                    </div>
+                </div>
+
+                <div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
+                    <div class="form-group" style="flex:1;">
+                        <label for="historyCategory">Category</label>
+                        <select id="historyCategory">
+                            <option value="Work">Work</option>
+                            <option value="Study">Study</option>
+                            <option value="Personal">Personal</option>
+                            <option value="Fitness">Fitness</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label for="historyPriority">Priority</label>
+                        <select id="historyPriority">
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="historyNotes">User Notes / Reflection</label>
+                    <textarea id="historyNotes" placeholder="e.g. Needed extra time due to bug issues"
+                        style="padding:10px; border-radius:10px; border:1px solid #ddd; height:80px; resize:none; outline:none; font-family:Arial;"></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">Log & Complete</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize page
+        document.addEventListener("DOMContentLoaded", function () {
+            // Initialize data in LocalStorage if not exists
+            let tasks = JSON.parse(localStorage.getItem("dashboard_tasks"));
+            let events = JSON.parse(localStorage.getItem("dashboard_events"));
+            let history = JSON.parse(localStorage.getItem("dashboard_history")) || [];
+
+            if (!tasks) {
+                tasks = []; // Start at 0 tasks
+                localStorage.setItem("dashboard_tasks", JSON.stringify(tasks));
+            }
+
+            if (!events) {
+                events = []; // Start at 0 events
+                localStorage.setItem("dashboard_events", JSON.stringify(events));
+            }
+
+            // Save data
+            function saveData() {
+                localStorage.setItem("dashboard_tasks", JSON.stringify(tasks));
+                localStorage.setItem("dashboard_events", JSON.stringify(events));
+                localStorage.setItem("dashboard_history", JSON.stringify(history));
+            }
+
+            // Set current date
+            const today = new Date();
+            const dateOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById("currentDateText").textContent = today.toLocaleDateString('en-US', dateOptions);
+
+            // History Modal Elements
+            const historyModal = document.getElementById("historyModal");
+            const closeHistoryModalBtn = document.getElementById("closeHistoryModalBtn");
+            const historyForm = document.getElementById("historyForm");
+
+            closeHistoryModalBtn.addEventListener("click", () => historyModal.style.display = "none");
+
+            window.addEventListener("click", (e) => {
+                if (e.target === historyModal) {
+                    historyModal.style.display = "none";
+                }
+            });
+
+            // Open history logging modal
+            function openHistoryLoggingModal(task) {
+                document.getElementById("historyTaskId").value = task.id;
+                document.getElementById("historyTaskName").value = task.name;
+                document.getElementById("historyStartDate").value = task.createdDate || today.toISOString().split('T')[0];
+                document.getElementById("historyEndDate").value = today.toISOString().split('T')[0];
+                document.getElementById("historyCategory").value = task.category || "Work";
+                document.getElementById("historyPriority").value = task.priority || "Medium";
+                document.getElementById("historyStatus").value = "Completed";
+                document.getElementById("historyDuration").value = "";
+                document.getElementById("historyDesc").value = "";
+                document.getElementById("historyNotes").value = "";
+
+                historyModal.style.display = "flex";
+            }
+
+            // Submit history form
+            historyForm.addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                const taskId = parseInt(document.getElementById("historyTaskId").value);
+                const name = document.getElementById("historyTaskName").value;
+                const description = document.getElementById("historyDesc").value;
+                const startDate = document.getElementById("historyStartDate").value;
+                const endDate = document.getElementById("historyEndDate").value;
+                const status = document.getElementById("historyStatus").value;
+                const duration = document.getElementById("historyDuration").value;
+                const category = document.getElementById("historyCategory").value;
+                const priority = document.getElementById("historyPriority").value;
+                const notes = document.getElementById("historyNotes").value;
+
+                // Create history item
+                const historyItem = {
+                    id: taskId,
+                    name: name,
+                    description: description,
+                    startDate: startDate,
+                    endDate: endDate,
+                    status: status,
+                    duration: duration,
+                    category: category,
+                    priority: priority,
+                    notes: notes
+                };
+
+                // Load, push, and save history
+                history = JSON.parse(localStorage.getItem("dashboard_history")) || [];
+                history.push(historyItem);
+                localStorage.setItem("dashboard_history", JSON.stringify(history));
+
+                // Update or add task in the active tasks array so it shows in the Completed Kanban column
+                const existingTaskIndex = tasks.findIndex(t => t.id === taskId);
+                if (existingTaskIndex !== -1) {
+                    tasks[existingTaskIndex].status = "Completed";
+                    tasks[existingTaskIndex].progress = 100;
+                    tasks[existingTaskIndex].category = category;
+                    tasks[existingTaskIndex].priority = priority;
+                } else {
+                    // New task added directly to history, also show it as completed on the task board.                    tasks.push({
+                    tasks.push({
+                        id: taskId,
+                        name: name,
+                        progress: 100,
+                        status: "Completed",
+                        category: category,
+                        priority: priority,
+                        createdDate: startDate
+                    });
+                }
+
+                saveData();
+                updateUI();
+
+                historyModal.style.display = "none";
+                historyForm.reset();
+            });
+
+            // Update UI
+            function updateUI() {
+                // Calculate stats 
+                const totalCount = tasks.length + events.length;
+                const inProgressCount = tasks.filter(t => t.status === "In Progress").length;
+                const pendingCount = tasks.filter(t => t.status === "Pending").length + events.length;
+                const completedCount = tasks.filter(t => t.status === "Completed").length;
+
+                // Render Kanban Board Cards
+                const todoCards = document.getElementById("todoCards");
+                const inProgressCards = document.getElementById("inProgressCards");
+                const completedCards = document.getElementById("completedCards");
+
+                todoCards.innerHTML = "";
+                inProgressCards.innerHTML = "";
+                completedCards.innerHTML = "";
+
+                let todoCount = 0;
+                let inProgressColCount = 0;
+                let completedColCount = 0;
+
+                tasks.forEach(task => {
+                    const card = document.createElement("div");
+                    card.className = "kanban-card";
+                    card.title = "Click to manage task status / progress or delete";
+
+                    card.onclick = () => {
+                        const action = prompt(
+                            `Manage Task: "${task.name}"\n` +
+                            `- Enter progress percentage (0-100)\n` +
+                            `- Or change status (type "todo", "progress", or "done")\n` +
+                            `- Or type "delete" to remove:`,
+                            task.progress
+                        );
+
+                        if (action !== null) {
+                            const cleanAction = action.trim().toLowerCase();
+                            if (cleanAction === 'delete') {
+                                if (confirm(`Delete task "${task.name}"?`)) {
+                                    tasks = tasks.filter(t => t.id !== task.id);
+                                    saveData();
+                                    updateUI();
+                                }
+                            } else if (cleanAction === 'todo') {
+                                task.status = "Pending";
+                                task.progress = 0;
+                                saveData();
+                                updateUI();
+                            } else if (cleanAction === 'progress') {
+                                task.status = "In Progress";
+                                if (task.progress === 0 || task.progress === 100) task.progress = 50;
+                                saveData();
+                                updateUI();
+                            } else if (cleanAction === 'done') {
+                                openHistoryLoggingModal(task);
+                            } else {
+                                const progInt = parseInt(cleanAction);
+                                if (!isNaN(progInt) && progInt >= 0 && progInt <= 100) {
+                                    task.progress = progInt;
+                                    if (progInt === 100) {
+                                        openHistoryLoggingModal(task);
+                                    } else if (progInt === 0) {
+                                        task.status = "Pending";
+                                        saveData();
+                                        updateUI();
+                                    } else {
+                                        task.status = "In Progress";
+                                        saveData();
+                                        updateUI();
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                    const title = document.createElement("h4");
+                    title.textContent = task.name;
+                    card.appendChild(title);
+
+                    const bar = document.createElement("div");
+                    bar.className = "progress-bar";
+                    const fill = document.createElement("div");
+
+                    if (task.status === "Pending") {
+                        fill.className = "fill todo-fill";
+                        fill.style.width = task.progress + "%";
+                        bar.appendChild(fill);
+                        card.appendChild(bar);
+
+                        const p = document.createElement("p");
+                        p.textContent = `${task.progress}% - To-Do`;
+                        card.appendChild(p);
+
+                        todoCards.appendChild(card);
+                        todoCount++;
+                    } else if (task.status === "Completed") {
+                        fill.className = "fill completed-fill";
+                        fill.style.width = task.progress + "%";
+                        bar.appendChild(fill);
+                        card.appendChild(bar);
+
+                        const p = document.createElement("p");
+                        p.textContent = "Done!";
+                        card.appendChild(p);
+
+                        completedCards.appendChild(card);
+                        completedColCount++;
+                    } else {
+                        fill.className = "fill in-progress-fill";
+                        fill.style.width = task.progress + "%";
+                        bar.appendChild(fill);
+                        card.appendChild(bar);
+
+                        const p = document.createElement("p");
+                        p.textContent = `${task.progress}% - In Progress`;
+                        card.appendChild(p);
+
+                        inProgressCards.appendChild(card);
+                        inProgressColCount++;
+                    }
+                });
+
+                // Update column counts
+                document.getElementById("todoCount").textContent = todoCount;
+                document.getElementById("inProgressColCount").textContent = inProgressColCount;
+                document.getElementById("completedColCount").textContent = completedColCount;
+
+                // Render upcoming events
+                const upcomingSection = document.getElementById("upcomingSection");
+                upcomingSection.innerHTML = "<h2>Upcoming</h2>";
+                events.forEach(event => {
+                    const div = document.createElement("div");
+                    div.className = "event";
+                    div.style.cursor = "pointer";
+                    div.title = "Double-click to delete event";
+
+                    div.ondblclick = () => {
+                        if (confirm(`Delete event "${event.name}"?`)) {
+                            events = events.filter(e => e.id !== event.id);
+                            saveData();
+                            updateUI();
+                        }
+                    };
+
+                    const span = document.createElement("span");
+                    span.className = `line ${event.color}-line`;
+
+                    const contentDiv = document.createElement("div");
+                    const h4 = document.createElement("h4");
+                    h4.textContent = event.name;
+                    const p = document.createElement("p");
+                    p.textContent = event.time;
+
+                    contentDiv.appendChild(h4);
+                    contentDiv.appendChild(p);
+                    div.appendChild(span);
+                    div.appendChild(contentDiv);
+
+                    upcomingSection.appendChild(div);
+                });
+
+                // Update breakdown & priority charts 
+                renderBreakdownDonutChart(tasks, history);
+                renderPriorityBarChart(tasks, history);
+            }
+
+            updateUI();
+
+            // Modal Open/Close function
+            const modal = document.getElementById("taskModal");
+            const addTaskBtn = document.getElementById("addTaskBtn");
+            const closeModalBtn = document.getElementById("closeModalBtn");
+            const itemType = document.getElementById("itemType");
+            const progressGroup = document.getElementById("progressGroup");
+            const categoryGroup = document.getElementById("categoryGroup");
+            const priorityGroup = document.getElementById("priorityGroup");
+            const timeGroup = document.getElementById("timeGroup");
+
+            addTaskBtn.addEventListener("click", () => {
+                modal.style.display = "flex";
+            });
+
+            closeModalBtn.addEventListener("click", () => {
+                modal.style.display = "none";
+            });
+
+            window.addEventListener("click", (e) => {
+                if (e.target === modal) {
+                    modal.style.display = "none";
+                }
+            });
+
+            itemType.addEventListener("change", function () {
+                if (this.value === "task") {
+                    progressGroup.style.display = "flex";
+                    categoryGroup.style.display = "flex";
+                    priorityGroup.style.display = "flex";
+                    timeGroup.style.display = "none";
+                } else {
+                    progressGroup.style.display = "none";
+                    categoryGroup.style.display = "none";
+                    priorityGroup.style.display = "none";
+                    timeGroup.style.display = "flex";
+                }
+            });
+
+            // Submit Form to Add Task/Event
+            const form = document.getElementById("newTaskForm");
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                const name = document.getElementById("itemName").value;
+                const type = itemType.value;
+                const status = document.getElementById("itemStatus").value;
+
+                if (type === "task") {
+                    let progress = parseInt(document.getElementById("itemProgress").value) || 0;
+                    let finalStatus = status;
+                    const category = document.getElementById("itemCategory").value;
+                    const priority = document.getElementById("itemPriority").value;
+
+                    // Automatically sync status & progress
+                    if (finalStatus === "Completed") {
+                        progress = 100;
+                    } else if (finalStatus === "Pending" && progress > 0) {
+                        finalStatus = "In Progress";
+                    } else if (progress === 100) {
+                        finalStatus = "Completed";
+                    } else if (progress === 0 && finalStatus === "In Progress") {
+                        finalStatus = "Pending";
+                    }
+
+                    const newTask = {
+                        id: Date.now(),
+                        name: name,
+                        progress: progress,
+                        status: finalStatus,
+                        category: category,
+                        priority: priority,
+                        createdDate: today.toISOString().split('T')[0]
+                    };
+
+                    if (newTask.status === "Completed") {
+                        openHistoryLoggingModal(newTask);
+                    } else {
+                        tasks.push(newTask);
+                    }
+                } else {
+                    const time = document.getElementById("eventTime").value || "All Day";
+                    const colors = ["purple", "pink", "green"];
+                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                    const newEvent = {
+                        id: Date.now(),
+                        name: name,
+                        time: time,
+                        color: randomColor
+                    };
+                    events.push(newEvent);
+                }
+
+                saveData();
+                updateUI();
+
+                form.reset();
+                progressGroup.style.display = "flex";
+                categoryGroup.style.display = "flex";
+                priorityGroup.style.display = "flex";
+                timeGroup.style.display = "none";
+                modal.style.display = "none";
+            });
+
+            // 6. Interactive Search function
+            const searchInput = document.getElementById("searchInput");
+            searchInput.addEventListener("input", function () {
+                const query = this.value.toLowerCase();
+
+                // Filter kanban cards
+                const kanbanCards = document.querySelectorAll(".kanban-card");
+                kanbanCards.forEach(card => {
+                    const title = card.querySelector("h4").textContent.toLowerCase();
+                    card.style.display = title.includes(query) ? "block" : "none";
+                });
+
+                // Filter events
+                const eventCards = document.querySelectorAll("#upcomingSection .event");
+                eventCards.forEach(card => {
+                    const title = card.querySelector("h4").textContent.toLowerCase();
+                    card.style.display = title.includes(query) ? "flex" : "none";
+                });
+            });
+
+            // 8. Welcome Card "Learn More"
+            document.getElementById("learnMoreBtn").addEventListener("click", function () {
+                alert("Task Management Dashboard:\n\n- Click '+ ADD NEW TASK' to add progress tasks or upcoming events.\n- Click on any task card to update progress or delete it.\n- Double-click on any upcoming event to delete it.\n- Use the search bar to filter tasks and events in real-time.");
+            });
+
+            // Render status breakdown donut chart
+            function renderBreakdownDonutChart(tasks, history) {
+                const container = document.getElementById("statusDonutContainer");
+                if (!container) return;
+
+                // Calculate counts from local data
+                let completed = tasks.filter(t => t.status === "Completed").length + history.filter(h => h.status === "Completed").length;
+                let inProgress = tasks.filter(t => t.status === "In Progress").length;
+                let todo = tasks.filter(t => t.status === "Pending").length;
+
+                let total = completed + inProgress + todo;
+
+                // Show sample data when no tasks are available
+                if (total === 0) {
+                    completed = 15;
+                    inProgress = 5;
+                    todo = 3;
+                    total = completed + inProgress + todo;
+                }
+
+                const completedPercent = Math.round((completed / total) * 100);
+                const inProgressPercent = Math.round((inProgress / total) * 100);
+                const todoPercent = 100 - completedPercent - inProgressPercent; // Ensure it adds to 100%
+
+                const r = 50;
+                const strokeWidth = 14;
+                const C = 2 * Math.PI * r;
+
+                // Calculate the arc length for each section of the donut chart
+                const gap = 2; // gap size in stroke length
+                const completedArc = (completedPercent / 100) * C;
+                const inProgressArc = (inProgressPercent / 100) * C;
+                const todoArc = (todoPercent / 100) * C;
+
+                // Adjust for gaps
+                const completedStroke = completedPercent > 0 ? Math.max(1, completedArc - gap) : 0;
+                const inProgressStroke = inProgressPercent > 0 ? Math.max(1, inProgressArc - gap) : 0;
+                const todoStroke = todoPercent > 0 ? Math.max(1, todoArc - gap) : 0;
+
+                const offset1 = -completedArc;
+                const offset2 = -(completedArc + inProgressArc);
+
+                let svgHtml = `
+            <svg width="160" height="160" viewBox="0 0 140 140" style="transform: rotate(-90deg); filter: drop-shadow(0 6px 15px rgba(0,0,0,0.06));">
+                <circle cx="70" cy="70" r="${r}" fill="transparent" stroke="#f5f5f5" stroke-width="${strokeWidth}" />
+        `;
+
+                if (completedPercent > 0) {
+                    svgHtml += `
+                <circle cx="70" cy="70" r="${r}" fill="transparent" 
+                        stroke="#8d7bff" stroke-width="${strokeWidth}" 
+                        stroke-dasharray="${completedStroke} ${C - completedStroke}" 
+                        stroke-dashoffset="0" />
+            `;
+                }
+
+                if (inProgressPercent > 0) {
+                    svgHtml += `
+                <circle cx="70" cy="70" r="${r}" fill="transparent" 
+                        stroke="#8dd7e8" stroke-width="${strokeWidth}" 
+                        stroke-dasharray="${inProgressStroke} ${C - inProgressStroke}" 
+                        stroke-dashoffset="${offset1}" />
+            `;
+                }
+
+                if (todoPercent > 0) {
+                    svgHtml += `
+                <circle cx="70" cy="70" r="${r}" fill="transparent" 
+                        stroke="#ffb3b3" stroke-width="${strokeWidth}" 
+                        stroke-dasharray="${todoStroke} ${C - todoStroke}" 
+                        stroke-dashoffset="${offset2}" />
+            `;
+                }
+
+                // Center total counter with text rotation fix
+                svgHtml += `
+                <text x="70" y="68" text-anchor="middle" font-size="16" font-weight="bold" fill="#333" style="transform: rotate(90deg); transform-origin: 70px 70px; font-family: Arial;">${total}</text>
+                <text x="70" y="82" text-anchor="middle" font-size="9" fill="#888" style="transform: rotate(90deg); transform-origin: 70px 70px; font-family: Arial;">Tasks</text>
+            </svg>
+            <div class="donut-legend" style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 15px; font-size: 12px; color: #555; width: 100%;">
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #8d7bff; display: inline-block;"></span>
+                    <span>Completed (${completedPercent}%)</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #8dd7e8; display: inline-block;"></span>
+                    <span>In Progress (${inProgressPercent}%)</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #ffb3b3; display: inline-block;"></span>
+                    <span>To Do (${todoPercent}%)</span>
+                </div>
+            </div>
+        `;
+
+                container.innerHTML = svgHtml;
+            }
+
+            // Render priority bar chart
+            function renderPriorityBarChart(tasks, history) {
+                const container = document.getElementById("priorityBarContainer");
+                if (!container) return;
+
+                // Calculate counts
+                let high = tasks.filter(t => t.priority === "High").length + history.filter(h => h.priority === "High").length;
+                let medium = tasks.filter(t => t.priority === "Medium").length + history.filter(h => h.priority === "Medium").length;
+                let low = tasks.filter(t => t.priority === "Low").length + history.filter(h => h.priority === "Low").length;
+
+                let total = high + medium + low;
+
+                // Display sample data when there are no tasks available yet
+                if (total === 0) {
+                    high = 8;
+                    medium = 15;
+                    low = 5;
+                    total = high + medium + low;
+                }
+
+                // SVG config
+                const svgWidth = 400;
+                const svgHeight = 220;
+                const paddingLeft = 40;
+                const paddingRight = 20;
+                const paddingTop = 25;
+                const paddingBottom = 35;
+
+                const plotWidth = svgWidth - paddingLeft - paddingRight;
+                const plotHeight = svgHeight - paddingTop - paddingBottom;
+
+                const maxCount = Math.max(5, Math.ceil(Math.max(high, medium, low) / 5) * 5); // grid tick matching
+
+                const barWidth = 45;
+                const categories = [
+                    { label: "High", count: high, color: "url(#highGrad)" },
+                    { label: "Medium", count: medium, color: "url(#mediumGrad)" },
+                    { label: "Low", count: low, color: "url(#lowGrad)" }
+                ];
+
+                let svgHtml = `
+            <svg width="100%" height="220" viewBox="0 0 ${svgWidth} ${svgHeight}" preserveAspectRatio="xMidYMid meet" style="overflow: visible;">
+                <defs>
+                    <linearGradient id="highGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#ff7b7b" />
+                        <stop offset="100%" stop-color="#ff5b5b" />
+                    </linearGradient>
+                    <linearGradient id="mediumGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#ffbe7b" />
+                        <stop offset="100%" stop-color="#ffaa00" />
+                    </linearGradient>
+                    <linearGradient id="lowGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#7be7a5" />
+                        <stop offset="100%" stop-color="#2ecc71" />
+                    </linearGradient>
+                </defs>
+        `;
+
+                // Grid Lines & Axis Values
+                const gridDivisions = 4;
+                for (let i = 0; i <= gridDivisions; i++) {
+                    const value = Math.round((maxCount / gridDivisions) * i);
+                    const y = paddingTop + plotHeight - (value * (plotHeight / maxCount));
+                    svgHtml += `
+                <line x1="${paddingLeft}" y1="${y}" x2="${svgWidth - paddingRight}" y2="${y}" stroke="#e6e6e6" stroke-width="1" stroke-dasharray="4 4" />
+                <text x="${paddingLeft - 10}" y="${y + 4}" text-anchor="end" fill="#888" font-size="11" font-family="Arial">${value}</text>
+            `;
+                }
+
+                // Display each category as a bar on the chart
+                categories.forEach((cat, index) => {
+                    const colWidth = plotWidth / 3;
+                    const x = paddingLeft + (index * colWidth) + (colWidth / 2) - (barWidth / 2);
+                    const h = (cat.count / maxCount) * plotHeight;
+                    const y = paddingTop + plotHeight - h;
+
+                    svgHtml += `
+                <g>
+                    <!-- Bar -->
+                    <rect x="${x}" y="${y}" width="${barWidth}" height="${h}" rx="6" ry="6" fill="${cat.color}" />
+                    
+                    <!-- Value Label on top of bar -->
+                    <text x="${x + barWidth / 2}" y="${y - 8}" text-anchor="middle" fill="#333" font-size="12" font-weight="bold" font-family="Arial">${cat.count}</text>
+                    
+                    <!-- X-Axis Label -->
+                    <text x="${x + barWidth / 2}" y="${svgHeight - 10}" text-anchor="middle" fill="#555" font-size="12" font-weight="bold" font-family="Arial">${cat.label}</text>
+                </g>
+            `;
+                });
+
+                svgHtml += `</svg>`;
+                container.innerHTML = svgHtml;
+            }
+        });
+    </script>
+</body>
+
+</html>

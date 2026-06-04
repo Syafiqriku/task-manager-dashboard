@@ -1,0 +1,174 @@
+/* General reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Background styling */
+body {
+    background: #f4f7fa;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Main authentication wrapper */
+.auth-wrapper {
+    width: 100%;
+    max-width: 420px;
+}
+
+/* Card container for login form */
+.auth-card {
+    background: white;
+    border-radius: 25px;
+    padding: 45px 35px;
+    box-shadow: 0 20px 40px rgba(0, 123, 255, 0.12);
+}
+
+/* Circular logo */
+.login-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #007BFF;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 26px;
+    margin: 0 auto 15px;
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+    font-size: 26px;
+    font-weight: bold;
+    margin: 0 auto 15px;
+}
+
+/* Logo and header container */
+.logo-container {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Form field group */
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* Form inputs container */
+.input-container {
+    position: relative;
+    width: 100%;
+}
+
+.input-container input {
+    width: 100%;
+    padding: 14px 15px 14px 48px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    font-size: 14px;
+}
+
+.input-container i {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 16px;
+    pointer-events: none;
+}
+
+/* Footer navigation text */
+.footer-text {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Hidden state utility class */
+.d-none {
+    display: none;
+}
+
+.auth-card {
+    background: white;
+    border-radius: 25px;
+    padding: 45px 35px;
+    box-shadow: 0 20px 40px rgba(0, 123, 255, 0.12);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* Form input labels */
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+/* Submit button */
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: #007BFF;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+
+    body {
+        padding: 15px;
+    }
+
+    .auth-wrapper {
+        max-width: 100%;
+    }
+
+    .auth-card {
+        padding: 30px 25px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .auth-card {
+        padding: 25px 20px;
+    }
+
+    .logo-container h2 {
+        font-size: 20px;
+    }
+
+    .login-circle {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+}
+
+/* Credentials info panel */
+.demo-login {
+    margin-top: 15px;
+    padding: 12px;
+    background: #E3F2FD;
+    border: 1px solid #007BFF;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 13px;
+    color: #333;
+}
+
+.demo-login p {
+    margin: 3px 0;
+}

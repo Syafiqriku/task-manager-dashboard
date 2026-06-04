@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager Dashboard</title>
+
+    <link rel="stylesheet" href="css/style1.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+
+            <div class="logo">
+                <div class="circle">TM</div>
+                <h2>Task Manager</h2>
+            </div>
+
+            <ul class="menu">
+                <li class="active"><a href="home.html"><i class="fa fa-home"></i> Home</a></li>
+                <li><a href="mytask.html"><i class="fa fa-tasks"></i> My Tasks</a></li>
+                <li><a href="analytics.html"><i class="fa fa-chart-line"></i> Analytics</a></li>
+                <li><a href="history.html"><i class="fa fa-clock"></i> Work History</a></li>
+                <li><a href="index.html"><i class="fa fa-lock"></i> Log Out</a></li>
+            </ul>
+
+            <button class="task-btn" id="addTaskBtn">+ ADD NEW TASK</button>
+
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+
+            <!-- Top -->
+            <div class="top-bar">
+                <div>
+                    <h1>Home</h1>
+                    <p id="currentDateText">13 March 2021</p>
+                </div>
+
+                <input type="text" id="searchInput" placeholder="Search...">
+            </div>
+
+            <!-- Welcome -->
+            <div class="welcome-card">
+
+                <div class="welcome-text">
+                    <h2>Welcome To Your Task Management Area</h2>
+                    <p>
+                        Manage your daily task easily and track project progress.
+                    </p>
+
+                    <button id="learnMoreBtn">Learn More</button>
+                </div>
+
+            </div>
+
+            <!-- Stats -->
+            <div class="stats">
+
+                <div class="card purple">
+                    <h2 id="totalTasksCount">0</h2>
+                    <p>Total Task</p>
+                </div>
+
+                <div class="card blue">
+                    <h2 id="inProgressCount">00</h2>
+                    <p>In Progress</p>
+                </div>
+
+                <div class="card pink">
+                    <h2 id="pendingCount">00</h2>
+                    <p>Pending</p>
+                </div>
+
+                <div class="card green">
+                    <h2 id="completedCount">0</h2>
+                    <p>Completed</p>
+                </div>
+
+            </div>
+
+            <!-- Charts -->
+            <div class="charts">
+
+                <div class="chart-box">
+                    <h2>Monthly Productivity</h2>
+
+                    <div class="monthly-chart">
+                        <div class="bar" style="height:40%"><span>Jan</span></div>
+                        <div class="bar" style="height:55%"><span>Feb</span></div>
+                        <div class="bar" style="height:70%"><span>Mar</span></div>
+                        <div class="bar" style="height:45%"><span>Apr</span></div>
+                        <div class="bar" style="height:80%"><span>May</span></div>
+                        <div class="bar" style="height:60%"><span>Jun</span></div>
+                        <div class="bar" style="height:50%"><span>Jul</span></div>
+                        <div class="bar" style="height:75%"><span>Aug</span></div>
+                        <div class="bar" style="height:65%"><span>Sep</span></div>
+                        <div class="bar" style="height:90%"><span>Oct</span></div>
+                        <div class="bar" style="height:70%"><span>Nov</span></div>
+                        <div class="bar" style="height:85%"><span>Dec</span></div>
+                    </div>
+                </div>
+
+                <div class="chart-box">
+                    <h2>Task Percentage</h2>
+
+                    <div class="circle-chart">
+                        <div class="inner-circle" id="taskPercentText">70%</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <footer
+                style="margin-top: 45px; padding-top: 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; color: #888; font-size: 13px;">
+                <p>&copy; 2026 Task Manager. All rights reserved.</p>
+                <div style="display: flex; gap: 15px;">
+                    <a href="#" style="color: #007BFF; text-decoration: none;">Privacy Policy</a>
+                    <a href="#" style="color: #007BFF; text-decoration: none;">Terms of Service</a>
+                    <a href="#" style="color: #007BFF; text-decoration: none;">Help & Support</a>
+                </div>
+            </footer>
+
+        </div>
+
+        <!-- Right Side -->
+        <div class="right-panel">
+
+
+
+            <div class="upcoming" id="upcomingSection">
+                <!-- Dynamic upcoming events will render here -->
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Add Task Modal -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModalBtn">&times;</span>
+            <h2>Create New Item</h2>
+            <form id="newTaskForm">
+                <div class="form-group">
+                    <label for="itemName">Item Name</label>
+                    <input type="text" id="itemName" required placeholder="e.g. Database Setup">
+                </div>
+                <div class="form-group">
+                    <label for="itemType">Item Type</label>
+                    <select id="itemType" required>
+                        <option value="task">Progress Task</option>
+                        <option value="event">Upcoming Event</option>
+                    </select>
+                </div>
+
+                <!-- Progress Field (Show only for tasks) -->
+                <div class="form-group" id="progressGroup">
+                    <label for="itemProgress">Progress (%)</label>
+                    <input type="number" id="itemProgress" min="0" max="100" value="0">
+                </div>
+
+                <!-- Category (Show only for tasks) -->
+                <div class="form-group" id="categoryGroup">
+                    <label for="itemCategory">Category</label>
+                    <select id="itemCategory">
+                        <option value="Work">Work</option>
+                        <option value="Study">Study</option>
+                        <option value="Personal">Personal</option>
+                        <option value="Fitness">Fitness</option>
+                    </select>
+                </div>
+
+                <!-- Priority (Show only for tasks) -->
+                <div class="form-group" id="priorityGroup">
+                    <label for="itemPriority">Priority Level</label>
+                    <select id="itemPriority">
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                    </select>
+                </div>
+
+                <!-- Event Time Field (Show only for events) -->
+                <div class="form-group" id="timeGroup" style="display: none;">
+                    <label for="eventTime">Time (e.g. 10 AM, 2 PM)</label>
+                    <input type="text" id="eventTime" placeholder="e.g. 10 AM">
+                </div>
+
+                <div class="form-group" id="statusGroup">
+                    <label for="itemStatus">Status</label>
+                    <select id="itemStatus">
+                        <option value="In Progress">In Progress</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="submit-btn">Create Item</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Log to History Modal -->
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeHistoryModalBtn">&times;</span>
+            <h2>Log Task to History</h2>
+            <form id="historyForm">
+                <input type="hidden" id="historyTaskId">
+
+                <div class="form-group">
+                    <label for="historyTaskName">Task Name</label>
+                    <input type="text" id="historyTaskName" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="historyDesc">Description</label>
+                    <textarea id="historyDesc" placeholder="e.g. Completed designing all mockup screens"
+                        style="padding:10px; border-radius:10px; border:1px solid #ddd; height:80px; resize:none; outline:none; font-family:Arial;"></textarea>
+                </div>
+
+                <div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
+                    <div class="form-group" style="flex:1;">
+                        <label for="historyStartDate">Start Date</label>
+                        <input type="date" id="historyStartDate">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label for="historyEndDate">Completion Date</label>
+                        <input type="date" id="historyEndDate">
+                    </div>
+                </div>
+
+                <div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
+                    <div class="form-group" style="flex:1;">
+                        <label for="historyStatus">Status Result</label>
+                        <select id="historyStatus">
+                            <option value="Completed">Completed</option>
+                            <option value="Failed">Failed</option>
+                            <option value="Cancelled">Cancelled</option>
+                            <option value="Delayed">Delayed</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label for="historyDuration">Duration</label>
+                        <input type="text" id="historyDuration" placeholder="e.g. 2 days, 5 hours">
+                    </div>
+                </div>
+
+                <div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
+                    <div class="form-group" style="flex:1;">
+                        <label for="historyCategory">Category</label>
+                        <select id="historyCategory">
+                            <option value="Work">Work</option>
+                            <option value="Study">Study</option>
+                            <option value="Personal">Personal</option>
+                            <option value="Fitness">Fitness</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label for="historyPriority">Priority</label>
+                        <select id="historyPriority">
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="historyNotes">User Notes / Reflection</label>
+                    <textarea id="historyNotes" placeholder="e.g. Needed extra time due to bug issues"
+                        style="padding:10px; border-radius:10px; border:1px solid #ddd; height:80px; resize:none; outline:none; font-family:Arial;"></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">Log & Complete</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize page
+        document.addEventListener("DOMContentLoaded", function () {
+            // Initialize data in LocalStorage if not exists
+            let tasks = JSON.parse(localStorage.getItem("dashboard_tasks"));
+            let events = JSON.parse(localStorage.getItem("dashboard_events"));
+            let history = JSON.parse(localStorage.getItem("dashboard_history"));
+
+            if (!tasks) {
+                tasks = []; // Start at 0 tasks
+                localStorage.setItem("dashboard_tasks", JSON.stringify(tasks));
+            }
+
+            if (!events) {
+                events = []; // Start at 0 events
+                localStorage.setItem("dashboard_events", JSON.stringify(events));
+            }
+
+            if (!history || history.length === 0) {
+                const currentYear = new Date().getFullYear();
+                history = [
+                    { id: 1, name: "Database Schema Design", startDate: `${currentYear}-01-10`, endDate: `${currentYear}-01-12`, status: "Completed", category: "Work", priority: "High", duration: "2 days", notes: "First milestone reached." },
+                    { id: 2, name: "Create Login Screen UI", startDate: `${currentYear}-02-05`, endDate: `${currentYear}-02-08`, status: "Completed", category: "Work", priority: "High", duration: "3 days", notes: "Highly responsive UI." },
+                    { id: 3, name: "User Registration Route", startDate: `${currentYear}-03-15`, endDate: `${currentYear}-03-18`, status: "Completed", category: "Work", priority: "Medium", duration: "3 days", notes: "Secure endpoints." },
+                    { id: 4, name: "Analytics Dashboard UI", startDate: `${currentYear}-03-20`, endDate: `${currentYear}-03-22`, status: "Completed", category: "Work", priority: "High", duration: "2 days", notes: "Interactive SVG lines." },
+                    { id: 5, name: "Configure Local Dev Environment", startDate: `${currentYear}-04-01`, endDate: `${currentYear}-04-02`, status: "Completed", category: "Personal", priority: "Low", duration: "1 day", notes: "Installed XAMPP." },
+                    { id: 6, name: "Double Check Responsive Grid", startDate: `${currentYear}-05-12`, endDate: `${currentYear}-05-14`, status: "Completed", category: "Work", priority: "Medium", duration: "2 days", notes: "Looks great on mobile." },
+                    { id: 7, name: "Deploy to Staging Server", startDate: `${currentYear}-06-01`, endDate: `${currentYear}-06-03`, status: "Completed", category: "Work", priority: "High", duration: "2 days", notes: "Live on cloud." },
+                    { id: 8, name: "Write API Documentation", startDate: `${currentYear}-08-10`, endDate: `${currentYear}-08-12`, status: "Completed", category: "Study", priority: "Medium", duration: "2 days", notes: "Swagger setup." },
+                    { id: 9, name: "Setup CI/CD Pipeline", startDate: `${currentYear}-10-05`, endDate: `${currentYear}-10-08`, status: "Completed", category: "Work", priority: "High", duration: "3 days", notes: "GitHub actions." },
+                    { id: 10, name: "Run Vulnerability Scanning", startDate: `${currentYear}-12-15`, endDate: `${currentYear}-12-18`, status: "Completed", category: "Work", priority: "High", duration: "3 days", notes: "Zero issues found." }
+                ];
+                localStorage.setItem("dashboard_history", JSON.stringify(history));
+            }
+
+            // Save data
+            function saveData() {
+                localStorage.setItem("dashboard_tasks", JSON.stringify(tasks));
+                localStorage.setItem("dashboard_events", JSON.stringify(events));
+                localStorage.setItem("dashboard_history", JSON.stringify(history));
+            }
+
+            // 2. Set current date
+            const today = new Date();
+            const dateOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById("currentDateText").textContent = today.toLocaleDateString('en-US', dateOptions);
+
+            // History Modal Elements
+            const historyModal = document.getElementById("historyModal");
+            const closeHistoryModalBtn = document.getElementById("closeHistoryModalBtn");
+            const historyForm = document.getElementById("historyForm");
+
+            closeHistoryModalBtn.addEventListener("click", () => historyModal.style.display = "none");
+
+            window.addEventListener("click", (e) => {
+                if (e.target === historyModal) {
+                    historyModal.style.display = "none";
+                }
+            });
+
+            // Open history logging modal
+            function openHistoryLoggingModal(task) {
+                document.getElementById("historyTaskId").value = task.id;
+                document.getElementById("historyTaskName").value = task.name;
+                document.getElementById("historyStartDate").value = task.createdDate || today.toISOString().split('T')[0];
+                document.getElementById("historyEndDate").value = today.toISOString().split('T')[0];
+                document.getElementById("historyCategory").value = task.category || "Work";
+                document.getElementById("historyPriority").value = task.priority || "Medium";
+                document.getElementById("historyStatus").value = "Completed";
+                document.getElementById("historyDuration").value = "";
+                document.getElementById("historyDesc").value = "";
+                document.getElementById("historyNotes").value = "";
+
+                historyModal.style.display = "flex";
+            }
+
+            // Submit history form
+            historyForm.addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                const taskId = parseInt(document.getElementById("historyTaskId").value);
+                const name = document.getElementById("historyTaskName").value;
+                const description = document.getElementById("historyDesc").value;
+                const startDate = document.getElementById("historyStartDate").value;
+                const endDate = document.getElementById("historyEndDate").value;
+                const status = document.getElementById("historyStatus").value;
+                const duration = document.getElementById("historyDuration").value;
+                const category = document.getElementById("historyCategory").value;
+                const priority = document.getElementById("historyPriority").value;
+                const notes = document.getElementById("historyNotes").value;
+
+                // Create history item
+                const historyItem = {
+                    id: taskId,
+                    name: name,
+                    description: description,
+                    startDate: startDate,
+                    endDate: endDate,
+                    status: status,
+                    duration: duration,
+                    category: category,
+                    priority: priority,
+                    notes: notes
+                };
+
+                // Load, push, and save history
+                history = JSON.parse(localStorage.getItem("dashboard_history")) || [];
+                history.push(historyItem);
+                localStorage.setItem("dashboard_history", JSON.stringify(history));
+
+                // Update or add task in the active tasks array so it shows in the Completed counts
+                const existingTaskIndex = tasks.findIndex(t => t.id === taskId);
+                if (existingTaskIndex !== -1) {
+                    tasks[existingTaskIndex].status = "Completed";
+                    tasks[existingTaskIndex].progress = 100;
+                    tasks[existingTaskIndex].category = category;
+                    tasks[existingTaskIndex].priority = priority;
+                } else {
+                    // It's a new task logged directly to history, add it as completed to the active board too
+                    tasks.push({
+                        id: taskId,
+                        name: name,
+                        progress: 100,
+                        status: "Completed",
+                        category: category,
+                        priority: priority,
+                        createdDate: startDate
+                    });
+                }
+
+                saveData();
+                updateUI();
+
+                historyModal.style.display = "none";
+                historyForm.reset();
+            });
+
+            // 3. Render Dynamic UI
+            // Update monthly chart
+            function updateMonthlyChart() {
+                const activeHistory = JSON.parse(localStorage.getItem("dashboard_history")) || [];
+                const currentYear = new Date().getFullYear();
+                const monthCounts = Array(12).fill(0);
+
+                activeHistory.forEach(item => {
+                    if (item.status === "Completed" && item.endDate) {
+                        const date = new Date(item.endDate);
+                        if (date.getFullYear() === currentYear) {
+                            const month = date.getMonth(); // 0-11
+                            monthCounts[month]++;
+                        }
+                    }
+                });
+
+                const maxCount = Math.max(...monthCounts);
+                const chartBars = document.querySelectorAll(".monthly-chart .bar");
+
+                chartBars.forEach((bar, index) => {
+                    const count = monthCounts[index];
+                    let heightPercent = 0;
+                    if (maxCount > 0) {
+                        heightPercent = Math.round((count / maxCount) * 90);
+                        if (count > 0 && heightPercent < 15) {
+                            heightPercent = 15; // Ensure small heights still have visual representation
+                        }
+                    }
+                    bar.style.height = `${heightPercent}%`;
+                    bar.setAttribute("data-count", `${count} Task${count !== 1 ? 's' : ''}`);
+                });
+            }
+
+            // Update UI
+            function updateUI() {
+                // Calculate stats 
+                const totalCount = tasks.length + events.length;
+                const inProgressCount = tasks.filter(t => t.status === "In Progress").length;
+                const pendingCount = tasks.filter(t => t.status === "Pending").length + events.length;
+                const completedCount = tasks.filter(t => t.status === "Completed").length;
+
+                // Update stats DOM
+                document.getElementById("totalTasksCount").textContent = totalCount;
+                document.getElementById("inProgressCount").textContent = String(inProgressCount).padStart(2, '0');
+                document.getElementById("pendingCount").textContent = String(pendingCount).padStart(2, '0');
+                document.getElementById("completedCount").textContent = completedCount;
+
+                // Compute average task percentage
+                const avgProgress = tasks.length > 0 ? Math.round(tasks.reduce((sum, t) => sum + parseInt(t.progress), 0) / tasks.length) : 0;
+                document.getElementById("taskPercentText").textContent = avgProgress + "%";
+
+                // Render upcoming events
+                const upcomingSection = document.getElementById("upcomingSection");
+                upcomingSection.innerHTML = "<h2>Upcoming</h2>";
+
+                events.forEach(event => {
+                    const div = document.createElement("div");
+                    div.className = "event";
+                    div.style.cursor = "pointer";
+                    div.title = "Double-click to delete event";
+
+                    div.ondblclick = () => {
+                        if (confirm(`Delete event "${event.name}"?`)) {
+                            events = events.filter(e => e.id !== event.id);
+                            saveData();
+                            updateUI();
+                        }
+                    };
+
+                    const span = document.createElement("span");
+                    span.className = `line ${event.color}-line`;
+
+                    const contentDiv = document.createElement("div");
+                    const h4 = document.createElement("h4");
+                    h4.textContent = event.name;
+                    const p = document.createElement("p");
+                    p.textContent = event.time;
+
+                    contentDiv.appendChild(h4);
+                    contentDiv.appendChild(p);
+                    div.appendChild(span);
+                    div.appendChild(contentDiv);
+
+                    upcomingSection.appendChild(div);
+                });
+
+                // Update monthly chart 
+                updateMonthlyChart();
+            }
+
+            updateUI();
+
+            // Modal Open/Close functional
+            const modal = document.getElementById("taskModal");
+            const addTaskBtn = document.getElementById("addTaskBtn");
+            const closeModalBtn = document.getElementById("closeModalBtn");
+            const itemType = document.getElementById("itemType");
+            const progressGroup = document.getElementById("progressGroup");
+            const categoryGroup = document.getElementById("categoryGroup");
+            const priorityGroup = document.getElementById("priorityGroup");
+            const timeGroup = document.getElementById("timeGroup");
+
+            addTaskBtn.addEventListener("click", () => {
+                modal.style.display = "flex";
+            });
+
+            closeModalBtn.addEventListener("click", () => {
+                modal.style.display = "none";
+            });
+
+            window.addEventListener("click", (e) => {
+                if (e.target === modal) {
+                    modal.style.display = "none";
+                }
+            });
+
+            itemType.addEventListener("change", function () {
+                if (this.value === "task") {
+                    progressGroup.style.display = "flex";
+                    categoryGroup.style.display = "flex";
+                    priorityGroup.style.display = "flex";
+                    timeGroup.style.display = "none";
+                } else {
+                    progressGroup.style.display = "none";
+                    categoryGroup.style.display = "none";
+                    priorityGroup.style.display = "none";
+                    timeGroup.style.display = "flex";
+                }
+            });
+
+            // Submit Form to Add Task/Event
+            const form = document.getElementById("newTaskForm");
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                const name = document.getElementById("itemName").value;
+                const type = itemType.value;
+                const status = document.getElementById("itemStatus").value;
+
+                if (type === "task") {
+                    let progress = parseInt(document.getElementById("itemProgress").value) || 0;
+                    let finalStatus = status;
+                    const category = document.getElementById("itemCategory").value;
+                    const priority = document.getElementById("itemPriority").value;
+
+                    // Automatically sync status & progress
+                    if (finalStatus === "Completed") {
+                        progress = 100;
+                    } else if (finalStatus === "Pending" && progress > 0) {
+                        finalStatus = "In Progress";
+                    } else if (progress === 100) {
+                        finalStatus = "Completed";
+                    } else if (progress === 0 && finalStatus === "In Progress") {
+                        finalStatus = "Pending";
+                    }
+
+                    const newTask = {
+                        id: Date.now(),
+                        name: name,
+                        progress: progress,
+                        status: finalStatus,
+                        category: category,
+                        priority: priority,
+                        createdDate: today.toISOString().split('T')[0]
+                    };
+
+                    if (newTask.status === "Completed") {
+                        openHistoryLoggingModal(newTask);
+                    } else {
+                        tasks.push(newTask);
+                    }
+                } else {
+                    const time = document.getElementById("eventTime").value || "All Day";
+                    const colors = ["purple", "pink", "green"];
+                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                    const newEvent = {
+                        id: Date.now(),
+                        name: name,
+                        time: time,
+                        color: randomColor
+                    };
+                    events.push(newEvent);
+                }
+
+                saveData();
+                updateUI();
+
+                form.reset();
+                progressGroup.style.display = "flex";
+                categoryGroup.style.display = "flex";
+                priorityGroup.style.display = "flex";
+                timeGroup.style.display = "none";
+                modal.style.display = "none";
+            });
+
+            // Interactive Search functionality
+            const searchInput = document.getElementById("searchInput");
+            searchInput.addEventListener("input", function () {
+                const query = this.value.toLowerCase();
+
+                // Filter events
+                const eventCards = document.querySelectorAll("#upcomingSection .event");
+                eventCards.forEach(card => {
+                    const title = card.querySelector("h4").textContent.toLowerCase();
+                    card.style.display = title.includes(query) ? "flex" : "none";
+                });
+            });
+
+            // Welcome Card "Learn More"
+            document.getElementById("learnMoreBtn").addEventListener("click", function () {
+                alert("Task Management Dashboard:\n\n- Click '+ ADD NEW TASK' to add progress tasks or upcoming events.\n- Click on any task card to update progress or delete it.\n- Double-click on any upcoming event to delete it.\n- Use the search bar to filter tasks and events in real-time.");
+            });
+        });
+    </script>
+</body>
+
+</html>
